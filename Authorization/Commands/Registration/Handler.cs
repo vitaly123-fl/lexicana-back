@@ -60,6 +60,10 @@ public class Handler : IRequestHandler<RegisterUserRequest, Response<string>>
             };
 
             _context.UserProviders.Add(newProvider);
+            
+            existingUser.PhotoUrl = GetUserAvatar(firebaseUser);
+            existingUser.DisplayName = firebaseUser.DisplayName;
+            
             await _context.SaveChangesAsync();
 
             var token = _jwtService.GenerateToken(existingUser.Id, existingUser.Email);
