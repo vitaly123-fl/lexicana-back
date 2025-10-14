@@ -20,7 +20,8 @@ public class Handler : IRequestHandler<UpdateUserEmailRequest, Response<EmptyVal
 
     public async Task<Response<EmptyValue>> Handle(UpdateUserEmailRequest request, CancellationToken cancellationToken)
     {
-        var firebaseId = _authService.GetCurrentUserFirebaseId();
+        // need update
+        var firebaseId = "";
 
         if (firebaseId is null)
         {

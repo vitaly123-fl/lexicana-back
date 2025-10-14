@@ -6,84 +6,101 @@ using Microsoft.AspNetCore.Mvc;
 using lexicana.UserFolder.Entities;
 using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
+using lexicana.UserFolder.ProviderFolder.Enums;
+using UserProvider = lexicana.UserFolder.ProviderFolder.Entities.UserProvider;
 
 namespace lexicana.Authorization.Commands.Registration;
 
 public record RegisterUserRequest([FromBody] RegisterUserBody Body) : IHttpRequest<string>;
-
 public record RegisterUserBody(string IdToken);
 
-public class Handler: IRequestHandler<RegisterUserRequest, Response<string>>
+public class Handler : IRequestHandler<RegisterUserRequest, Response<string>>
 {
     private readonly JWtService _jwtService;
     private readonly FirebaseAuth _firebaseAuth;
     private readonly ApplicationDbContext _context;
-    
+
     public Handler(ApplicationDbContext context, FirebaseAuth firebaseAuth, JWtService jwtService)
     {
         _context = context;
         _jwtService = jwtService;
         _firebaseAuth = firebaseAuth;
     }
-    
+
     public async Task<Response<string>> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
     {
         var firebaseToken = await _firebaseAuth.VerifyIdTokenAsync(request.Body.IdToken);
-
-        if (firebaseToken is null)
-        {
-            return FailureResponses.BadRequest<string>("Your token invalid for this project");
-        }
+        if (firebaseToken is null) return FailureResponses.BadRequest<string>("Your token is invalid for this project.");
 
         var firebaseUser = await _firebaseAuth.GetUserAsync(firebaseToken.Uid);
+        if (firebaseUser is null) return FailureResponses.NotFound<string>("Firebase user not found.");
+
+        var providerInfo = firebaseUser.ProviderData.FirstOrDefault();
+        if (providerInfo is null) return FailureResponses.BadRequest<string>("Provider data is missing.");
+
+        var firebaseId = firebaseUser.Uid;
+        var provider = providerInfo.ProviderId;
+        var email = providerInfo.Email ?? firebaseUser.Email;
         
-        if (firebaseUser is null)
+        var existingUser = await _context.Users
+            .Include(u => u.Providers)
+            .FirstOrDefaultAsync(u => u.Email == email);
+
+        if (existingUser is not null)
         {
-            return FailureResponses.NotFound<string>("Firebase user not found");
+            var providerExists = existingUser.Providers.Any(p => p.Provider == provider);
+
+            if (providerExists) return FailureResponses.BadRequest<string>($"User with provider '{provider}' already exists.");
+
+            var newProvider = new UserProvider
+            {
+                FirebaseId = firebaseId,
+                Provider = provider,
+                User = existingUser
+            };
+
+            _context.UserProviders.Add(newProvider);
+            await _context.SaveChangesAsync();
+
+            var token = _jwtService.GenerateToken(existingUser.Id, existingUser.Email);
+            return SuccessResponses.Ok(token);
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.FirebaseId == firebaseUser.Uid);
-        
-        if (user is not null)
+        var newUser = new User
         {
-            return FailureResponses.NotFound<string>("This user already exist. Please login.");
-        }
-
-        var avatar = GetUserAvatar(firebaseUser);
-        var provider = firebaseUser.ProviderData[0].ProviderId;
-        
-        var newUser = new User()
-        {
-            PhotoUrl = avatar,
-            Provider = provider,
-            Email = firebaseUser.Email,
-            FirebaseId = firebaseUser.Uid,
+            Email = email,
             DisplayName = firebaseUser.DisplayName ?? "User",
+            PhotoUrl = GetUserAvatar(firebaseUser)
         };
+
+        var userProvider = new UserProvider
+        {
+            FirebaseId = firebaseId,
+            Provider = provider,
+            User = newUser
+        };
+
+        newUser.Providers.Add(userProvider);
 
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
-        
-        var token = _jwtService.GenerateToken(newUser.Id, newUser.Email, newUser.FirebaseId);
 
-        return SuccessResponses.Ok(token);
+        var newToken = _jwtService.GenerateToken(newUser.Id, newUser.Email);
+        return SuccessResponses.Ok(newToken);
     }
 
     private string GetUserAvatar(UserRecord user)
     {
-        if (!string.IsNullOrWhiteSpace(user.PhotoUrl))
-        {
+        var provider = user.ProviderData.First();
+        
+        if (provider.ProviderId == FirebaseProviderEnum.Google)
             return user.PhotoUrl;
-        }
 
         var name = !string.IsNullOrWhiteSpace(user.DisplayName)
             ? user.DisplayName
-            : user.Email ?? "User";
+            : provider.Email ?? user.Email;
 
         var encodedName = Uri.EscapeDataString(name);
-
-        var avatarUrl = $"https://ui-avatars.com/api/?name={encodedName}&background=random&color=fff&size=256&rounded=true";
-
-        return avatarUrl;
+        return $"https://ui-avatars.com/api/?name={encodedName}&background=random&color=fff&size=256&rounded=true";
     }
 }

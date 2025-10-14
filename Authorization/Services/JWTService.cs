@@ -13,12 +13,11 @@ namespace lexicana.Authorization.Services
             _authOptions = authOptions.Value;
         }
 
-        public string GenerateToken(Guid id, string email, string firebaseUid)
+        public string GenerateToken(Guid id, string email)
         {
             var claims = new List<Claim>
             {
                 new("id", id.ToString()),
-                new("firebaseUid", firebaseUid),
                 new("email", email)
             };
 
