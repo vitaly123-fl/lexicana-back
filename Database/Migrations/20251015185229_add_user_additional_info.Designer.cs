@@ -12,8 +12,8 @@ using lexicana.Database;
 namespace lexicana.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251013200129_update_user_providers")]
-    partial class update_user_providers
+    [Migration("20251015185229_add_user_additional_info")]
+    partial class add_user_additional_info
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,10 @@ namespace lexicana.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("FirebaseId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("Language")
                         .HasColumnType("integer");
 
@@ -49,52 +53,16 @@ namespace lexicana.Database.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("lexicana.UserFolder.ProviderFolder.Entities.UserProvider", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FirebaseId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Provider")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ResetCode")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserProviders");
-                });
-
-            modelBuilder.Entity("lexicana.UserFolder.ProviderFolder.Entities.UserProvider", b =>
-                {
-                    b.HasOne("lexicana.UserFolder.Entities.User", "User")
-                        .WithMany("Providers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("lexicana.UserFolder.Entities.User", b =>
-                {
-                    b.Navigation("Providers");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

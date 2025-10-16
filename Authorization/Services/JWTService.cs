@@ -13,12 +13,12 @@ namespace lexicana.Authorization.Services
             _authOptions = authOptions.Value;
         }
 
-        public string GenerateToken(Guid id, string email)
+        public string GenerateToken(Guid id, string firebaseId)
         {
             var claims = new List<Claim>
             {
                 new("id", id.ToString()),
-                new("email", email)
+                new("firebaseId", firebaseId)
             };
 
             var jwt = new JwtSecurityToken(

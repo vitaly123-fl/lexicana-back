@@ -30,16 +30,12 @@ public class Handler: IRequestHandler<LoginUserRequest, Response<string>>
         var firebaseToken = await _firebaseAuth.VerifyIdTokenAsync(request.Body.IdToken);
 
         if (firebaseToken is null)
-        {
             return FailureResponses.BadRequest<string>("Token invalid for this project");
-        }
 
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Providers.Any(x=>x.FirebaseId == firebaseToken.Uid));
+        var user = await _context.Users.FirstOrDefaultAsync(x=>x.FirebaseId == firebaseToken.Uid);
         
         if (user is null)
-        {
             return FailureResponses.NotFound<string>("User not found. Please sign up.");
-        }
 
         var token = _jwtService.GenerateToken(user.Id, user.Email);
 
