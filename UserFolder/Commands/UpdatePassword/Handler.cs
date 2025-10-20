@@ -4,7 +4,7 @@ using FirebaseAdmin.Auth;
 using lexicana.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using lexicana.Authorization.Services;
-using lexicana.UserFolder.ProviderFolder.Enums;
+using lexicana.UserFolder.Enums;
 
 namespace lexicana.UserFolder.Commands.UpdatePassword;
 

@@ -4,7 +4,7 @@ using lexicana.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using lexicana.Authorization.Services;
 using lexicana.Database;
-using lexicana.UserFolder.ProviderFolder.Enums;
+using lexicana.UserFolder.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace lexicana.UserFolder.Commands.UpdateEmail;

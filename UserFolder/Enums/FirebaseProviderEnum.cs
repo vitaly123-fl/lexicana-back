@@ -1,4 +1,4 @@
-namespace lexicana.UserFolder.ProviderFolder.Enums;
+namespace lexicana.UserFolder.Enums;
 
 public static class FirebaseProviderEnum
 {
