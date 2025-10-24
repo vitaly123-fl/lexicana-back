@@ -1,0 +1,164 @@
+@using lexicana.Razor.Models
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #160232 !important;
+        }
+        .email-container {
+            font-family: 'Avenir', 'Avenir Next', 'Montserrat', sans-serif;
+            max-width: 780px;
+            margin: 0 auto;
+            border-radius: 20px;
+            background-color: #160232 !important;
+            padding: 51px 60px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .email-header {
+            font-size: 28px;
+            font-weight: 400;
+            color: #ffffff !important;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .email-header strong {
+            font-weight: 700;
+            color: #ffffff !important;
+        }
+        .email-subtitle {
+            font-size: 16px;
+            font-weight: 350;
+            color: #ffffff !important;
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1.5;
+            white-space: normal;
+        }
+        .email-footer {
+            font-size: 16px;
+            font-weight: 350;
+            color: #ffffff !important;
+            text-align: center;
+            line-height: 1.5;
+            white-space: normal;
+        }
+        .code-container {
+            display: block;
+            white-space: nowrap;
+            margin-bottom: 40px;
+        }
+        .code-box {
+            display: inline-block;
+            width: 71px;
+            height: 95px;
+            background-color: #5E2BA766 !important;
+            border: 2px solid #5E2BA7 !important;
+            border-radius: 15px;
+            margin: 0 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .code-digit {
+            font-size: 48px;
+            font-weight: 800;
+            color: #ffffff !important;
+            line-height: 95px;
+        }
+
+        @@media (prefers-color-scheme: light) {
+            body {
+                background-color: #160232 !important;
+            }
+            .email-container {
+                background-color: #160232 !important;
+            }
+            .email-header,
+            .email-header strong,
+            .email-subtitle,
+            .email-footer,
+            .code-digit {
+                color: #ffffff !important;
+            }
+            .code-box {
+                background-color: #5E2BA766 !important;
+                border-color: #5E2BA7 !important;
+            }
+        }
+
+        @@media only screen and (max-width: 600px) {
+            .email-container {
+                padding: 30px 20px;
+                border-radius: 0;
+            }
+            .email-header {
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+            .email-subtitle,
+            .email-footer {
+                font-size: 14px;
+                margin-bottom: 30px;
+            }
+            .code-box {
+                width: 60px;
+                height: 80px;
+                margin: 0 5px;
+            }
+            .code-digit {
+                font-size: 40px;
+                line-height: 80px;
+            }
+        }
+        @@media only screen and (max-width: 400px) {
+            .email-container {
+                padding: 20px 15px;
+            }
+            .email-header {
+                font-size: 20px;
+            }
+            .code-box {
+                width: 50px;
+                height: 70px;
+                margin: 0 3px;
+            }
+            .code-digit {
+                font-size: 32px;
+                line-height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    @if (!string.IsNullOrEmpty(Model.LogoUrl))
+    {
+    <img src="@Model.LogoUrl" height=40 style="margin-bottom:40px;" alt="Lexicana Logo">
+    }
+    <div class="email-header"><strong>Hi @Model.UserName!</strong> @Model.Title</div>
+    <div class="email-subtitle">@Model.Subtitle</div>
+    <div class="code-container">
+        @foreach (var digit in Model.Code)
+        {
+        <div class="code-box">
+            <span class="code-digit">@digit</span>
+        </div>
+        }
+    </div>
+    <div class="email-footer">
+        If you didn't request password reset then you can ignore this email.<br/>
+        <small style="opacity:0;">Ref: @Model.Code.First()@DateTime.UtcNow.Ticks</small>
+    </div>
+</div>
+</body>
+</html>
+@code
+{
+[Parameter] public PasswordCodeModel Model { get; set; }
+}

@@ -3,7 +3,10 @@ using lexicana.Database;
 using lexicana.Endpoints;
 using lexicana.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
+using lexicana.UserFolder.UserTopicFolder.Enums;
+using lexicana.UserFolder.UserTopicFolder.Entities;
 
 namespace lexicana.UserFolder.Commands.UpdateLanguage;
 
@@ -28,11 +31,36 @@ public class Handler: IRequestHandler<UpdateUserLanguageRequest, Response<EmptyV
     {
         var userId = _authService.GetCurrentUserId();
         
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return FailureResponses.NotFound("User not found");
+        var user = await _context.Users
+            .Include(x=>x.UserTopics)
+            .FirstOrDefaultAsync(x=> x.Id == userId);
+        
+        if (user == null) 
+            return FailureResponses.NotFound("User not found");
 
         user.Language = request.Body.Language;
+        await _context.SaveChangesAsync();
         
+        var hasUserTopicForLanguage = user.UserTopics
+            .Any(ut => _context.Topics.Any(t => t.Id == ut.TopicId && t.Language == request.Body.Language));
+
+        if (hasUserTopicForLanguage) return SuccessResponses.Ok();
+        
+        var firstTopic = await _context.Topics
+            .Where(t => t.Language == request.Body.Language)
+            .OrderBy(t => t.Order)
+            .FirstOrDefaultAsync();
+
+        if (firstTopic is null) return SuccessResponses.Ok();
+        
+        var userTopic = new UserTopic
+        {
+            UserId = user.Id,
+            TopicId = firstTopic.Id,
+            Status = UserTopicStatus.Current
+        };
+
+        await _context.UserTopics.AddAsync(userTopic);
         await _context.SaveChangesAsync();
         return SuccessResponses.Ok();
     }

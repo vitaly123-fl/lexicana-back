@@ -1,6 +1,7 @@
 using System.Reflection;
 using lexicana.Authorization;
 using lexicana.Database;
+using lexicana.EmailSender;
 using lexicana.Endpoints;
 
 namespace lexicana.Configurations;
@@ -18,6 +19,7 @@ public static class Configuration
         services.AddEndpoints(Assembly.GetExecutingAssembly());
         services.AddAuthConfig(configuration);
         services.AddFirebaseConfig(configuration);
+        services.AddEmailConfig(configuration);
         services.AddMediatR(x=> x.RegisterServicesFromAssemblyContaining<Program>());
         return services;
     }   

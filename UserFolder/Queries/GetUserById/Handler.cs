@@ -1,8 +1,8 @@
 using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
-using lexicana.Authorization.Services;
 using lexicana.Common.Enums;
+using lexicana.Authorization.Services;
 
 namespace lexicana.UserFolder.Queries.GetUserById;
 
@@ -11,10 +11,10 @@ public record GetUserRequest() : IHttpRequest<GetUserResponse>;
 public record GetUserResponse(
     Guid Id, 
     string Email,
-    string DisplayName,
     string PhotoUrl,
-    string Provider,
-    Language? Language
+    string DisplayName,
+    Language? Language,
+    string Provider
 );
 
 public class Handler: IRequestHandler<GetUserRequest, Response<GetUserResponse>>
@@ -31,17 +31,17 @@ public class Handler: IRequestHandler<GetUserRequest, Response<GetUserResponse>>
     public async Task<Response<GetUserResponse>> Handle(GetUserRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
+        var user = await _context.Users.FindAsync(userId, cancellationToken);
         
-        var user = await _context.Users.FindAsync(userId);
         if (user == null) return FailureResponses.NotFound<GetUserResponse>("User not found");
-
+        
         var userDto = new GetUserResponse(
             user.Id, 
             user.Email,
-            user.DisplayName,
             user.PhotoUrl,
-            user.Provider,
-            user.Language
+            user.DisplayName,
+            user.Language,
+            user.Provider
         );
         
         return SuccessResponses.Ok(userDto);

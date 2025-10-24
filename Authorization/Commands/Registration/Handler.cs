@@ -31,40 +31,34 @@ public class Handler: IRequestHandler<RegisterUserRequest, Response<string>>
         var firebaseToken = await _firebaseAuth.VerifyIdTokenAsync(request.Body.IdToken);
 
         if (firebaseToken is null)
-        {
             return FailureResponses.BadRequest<string>("Your token invalid for this project");
-        }
 
         var firebaseUser = await _firebaseAuth.GetUserAsync(firebaseToken.Uid);
         
         if (firebaseUser is null)
-        {
             return FailureResponses.NotFound<string>("Firebase user not found");
-        }
 
         var user = await _context.Users.FirstOrDefaultAsync(x => x.FirebaseId == firebaseUser.Uid);
         
         if (user is not null)
-        {
             return FailureResponses.NotFound<string>("This user already exist. Please login.");
-        }
 
         var avatar = GetUserAvatar(firebaseUser);
-        var provider = firebaseUser.ProviderData[0].ProviderId;
+        var provider = firebaseUser.ProviderData[0];
         
         var newUser = new User()
         {
             PhotoUrl = avatar,
-            Provider = provider,
-            Email = firebaseUser.Email,
             FirebaseId = firebaseUser.Uid,
-            DisplayName = firebaseUser.DisplayName ?? "User",
+            Provider = provider.ProviderId,
+            Email = provider.Email ?? firebaseUser.Email,
+            DisplayName = firebaseUser.DisplayName ?? "User"
         };
 
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
         
-        var token = _jwtService.GenerateToken(newUser.Id, newUser.Email, newUser.FirebaseId);
+        var token = _jwtService.GenerateToken(newUser.Id, newUser.FirebaseId);
 
         return SuccessResponses.Ok(token);
     }
@@ -72,9 +66,7 @@ public class Handler: IRequestHandler<RegisterUserRequest, Response<string>>
     private string GetUserAvatar(UserRecord user)
     {
         if (!string.IsNullOrWhiteSpace(user.PhotoUrl))
-        {
             return user.PhotoUrl;
-        }
 
         var name = !string.IsNullOrWhiteSpace(user.DisplayName)
             ? user.DisplayName

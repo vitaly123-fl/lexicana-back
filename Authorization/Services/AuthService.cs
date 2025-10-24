@@ -17,7 +17,7 @@ public class AuthService
     
     public string? GetCurrentUserFirebaseId()
     {
-        var id = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "firebaseUid")?.Value;
+        var id = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(x => x.Type == "firebaseId")?.Value;
         return id;
     }
 }
