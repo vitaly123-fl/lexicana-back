@@ -26,6 +26,7 @@ public class Handler: IRequestHandler<UpdateUserLanguageRequest, Response<EmptyV
     
     public async Task<Response<EmptyValue>> Handle(UpdateUserLanguageRequest request, CancellationToken cancellationToken)
     {
+        //TODO винеси це в сервеіс
         var userId = _authService.GetCurrentUserId();
         
         var user = await _context.Users.FindAsync(userId);

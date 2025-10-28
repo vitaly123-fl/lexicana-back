@@ -20,10 +20,12 @@ public class Handler : IRequestHandler<UpdateUserEmailRequest, Response<EmptyVal
 
     public async Task<Response<EmptyValue>> Handle(UpdateUserEmailRequest request, CancellationToken cancellationToken)
     {
+        //TODO винести це в сервіс
         var firebaseId = _authService.GetCurrentUserFirebaseId();
 
         if (firebaseId is null)
         {
+            //TODO це потрібно кудись винести, бо я це не перший раз бачу
             return FailureResponses.BadRequest("Your session is invalid. Please login again.");
         }
         
