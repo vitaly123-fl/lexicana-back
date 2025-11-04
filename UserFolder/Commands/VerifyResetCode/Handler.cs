@@ -2,38 +2,41 @@ using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
 
 namespace lexicana.UserFolder.Commands.VerifyResetCode;
 
-public record VerifyUserResetCodeRequest([FromBody] VerifyUserResetCodeBody Body) : IHttpRequest<EmptyValue>;
+public record VerifyUserResetCodeRequest([FromBody] VerifyUserResetCodeBody Body) : IHttpRequest<string>;
 
-public record VerifyUserResetCodeBody(string Code);
+public record VerifyUserResetCodeBody(string Email, string Code);
 
-public class Handler: IRequestHandler<VerifyUserResetCodeRequest, Response<EmptyValue>>
+public class Handler: IRequestHandler<VerifyUserResetCodeRequest, Response<string>>
 {
-    private readonly AuthService _authService;
+    private readonly JWtService _jWtService;
     private readonly ApplicationDbContext _context;
         
-    public Handler(ApplicationDbContext context, AuthService authService)
+    public Handler(ApplicationDbContext context, JWtService jWtService)
     {
         _context = context;
-        _authService = authService;
+        _jWtService = jWtService;
     }
     
-    public async Task<Response<EmptyValue>> Handle(VerifyUserResetCodeRequest request, CancellationToken cancellationToken)
+    public async Task<Response<string>> Handle(VerifyUserResetCodeRequest request, CancellationToken cancellationToken)
     {
-        var userId = _authService.GetCurrentUserId();
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _context.Users.FirstOrDefaultAsync(x=>x.Email == request.Body.Email);
 
         if (user is null)
-            return FailureResponses.NotFound("User not found");
+            return FailureResponses.NotFound<string>("User not found");
 
         if (user.ResetCode != request.Body.Code)
-            return FailureResponses.NotFound("The code does not match. Please try again.");
+            return FailureResponses.NotFound<string>("The code does not match. Please try again.");
 
         user.ResetCode = null;
         await _context.SaveChangesAsync();
-        return SuccessResponses.Ok();
+
+        var token = _jWtService.GenerateToken(user.Id, user.FirebaseId);
+        
+        return SuccessResponses.Ok(token);
     }
 }

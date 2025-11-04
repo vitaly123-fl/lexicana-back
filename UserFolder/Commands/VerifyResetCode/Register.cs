@@ -6,7 +6,7 @@ public class Register: IEndpoint
 {
     public void MapEndpoint(RouteGroupBuilder app)
     {
-        app.MediatePost<VerifyUserResetCodeRequest, EmptyValue>("users/verify")
-            .WithTags(EndpointTagEnum.Email);
+        app.MediatePost<VerifyUserResetCodeRequest, string>("users/verify")
+            .WithTags(EndpointTagEnum.Email).AllowAnonymous();
     }
 }

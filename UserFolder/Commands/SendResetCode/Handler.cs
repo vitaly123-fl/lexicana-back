@@ -1,31 +1,30 @@
 using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
-using lexicana.Razor.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using lexicana.EmailSender.Services;
-using lexicana.Authorization.Services;
 
 namespace lexicana.UserFolder.Commands.SendResetCode;
 
-public record SendResetCodeRequest() : IHttpRequest<EmptyValue>;
+public record SendResetCodeRequest([FromBody] SendResetCodeBody Body) : IHttpRequest<EmptyValue>;
+
+public record SendResetCodeBody(string Email);
 
 public class Handler : IRequestHandler<SendResetCodeRequest, Response<EmptyValue>>
 {
-    private readonly AuthService _authService;
     private readonly EmailService _emailService;
     private readonly ApplicationDbContext _context;
     
-    public Handler(EmailService emailService, ApplicationDbContext context, AuthService authService)
+    public Handler(EmailService emailService, ApplicationDbContext context)
     {
         _context = context;
-        _authService = authService;
         _emailService = emailService;
     }
 
     public async Task<Response<EmptyValue>> Handle(SendResetCodeRequest request, CancellationToken cancellationToken)
     {
-        var userId = _authService.GetCurrentUserId();
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _context.Users.FirstOrDefaultAsync(x=>x.Email == request.Body.Email);
         
         if (user is null) return FailureResponses.NotFound("User not found");
         

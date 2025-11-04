@@ -7,6 +7,6 @@ public class Register: IEndpoint
     public void MapEndpoint(RouteGroupBuilder app)
     {
         app.MediatePost<SendResetCodeRequest, EmptyValue>("users/code")
-            .WithTags(EndpointTagEnum.Email);
+            .WithTags(EndpointTagEnum.Email).AllowAnonymous();
     }
 }
