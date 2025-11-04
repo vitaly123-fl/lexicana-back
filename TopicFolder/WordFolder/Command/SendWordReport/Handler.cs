@@ -39,7 +39,7 @@ public class Handler: IRequestHandler<SendWordReportRequest, Response<EmptyValue
         {
             Word = word.Value,
             Translation = word.Translation
-        }, user.Email);
+        });
 
         return SuccessResponses.Ok();
     }

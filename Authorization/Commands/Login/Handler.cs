@@ -27,12 +27,12 @@ public class Handler: IRequestHandler<LoginUserRequest, Response<string>>
     
     public async Task<Response<string>> Handle(LoginUserRequest request, CancellationToken cancellationToken)
     {
-        var firebaseToken = await _firebaseAuth.VerifyIdTokenAsync(request.Body.IdToken);
+        var firebaseToken = await _firebaseAuth.VerifyIdTokenAsync(request.Body.IdToken, cancellationToken);
 
         if (firebaseToken is null)
             return FailureResponses.BadRequest<string>("Token invalid for this project");
 
-        var user = await _context.Users.FirstOrDefaultAsync(x=>x.FirebaseId == firebaseToken.Uid);
+        var user = await _context.Users.FirstOrDefaultAsync(x=>x.FirebaseId == firebaseToken.Uid, cancellationToken);
         
         if (user is null)
             return FailureResponses.NotFound<string>("User not found. Please sign up.");

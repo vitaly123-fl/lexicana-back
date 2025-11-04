@@ -4,7 +4,7 @@ using lexicana.Endpoints;
 using Microsoft.EntityFrameworkCore;
 using lexicana.TopicFolder.WordFolder.DTOs;
 
-namespace lexicana.TopicFolder.WordFolder.Queries.GetTopicWords;
+namespace lexicana.TopicFolder.Queries.GetTopicWords;
 
 public record GetTopicWordsRequest(Guid Id) : IHttpRequest<List<WordModel>>;
 

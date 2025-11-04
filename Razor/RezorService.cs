@@ -15,7 +15,7 @@ namespace lexicana.Razor
 
         public async Task<string> RenderAsync<TComponent>(Dictionary<string, object?> parameters) where TComponent : IComponent
         {
-            using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
+            await using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
 
             var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
             {

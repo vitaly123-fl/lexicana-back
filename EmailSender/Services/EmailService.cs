@@ -28,7 +28,7 @@ public class EmailService
             Code = model.Code,
             UserName = model.UserName,
             Subtitle = "Use the code below to enter in the app.",
-            Title = "We’ve received a request to reset \u2028your password. "
+            Title = "We’ve received a request to reset."
         };
         
         var parameters = new Dictionary<string, object?>
@@ -47,7 +47,7 @@ public class EmailService
         await _emailSender.SendEmailAsync(emailMessage);
     }
     
-    public async Task SendTranslateReportAsync(WordCardModel? cardModel, string email)
+    public async Task SendTranslateReportAsync(WordCardModel cardModel)
     {
         var parameters = new Dictionary<string, object?>
         {
@@ -57,7 +57,7 @@ public class EmailService
         var html = await _razorRenderer.RenderAsync<TranslateReport>(parameters);
 
         var emailMessage = new EmailMessage(
-            To: email,
+            To: "support@lexicana.app",
             Subject: "🕵️‍♂️ Incorrect Translation Report.",
             Html: html
         );
