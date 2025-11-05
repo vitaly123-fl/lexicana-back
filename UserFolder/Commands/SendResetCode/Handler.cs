@@ -3,7 +3,7 @@ using lexicana.Database;
 using lexicana.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using lexicana.EmailSender.Services;
+using lexicana.UserFolder.Commands.SendResetCode.Email.Services;
 
 namespace lexicana.UserFolder.Commands.SendResetCode;
 
@@ -13,13 +13,13 @@ public record SendResetCodeBody(string Email);
 
 public class Handler : IRequestHandler<SendResetCodeRequest, Response<EmptyValue>>
 {
-    private readonly UserMailService _userMailService;
+    private readonly ResetCodeMailService _resetCodeMailService;
     private readonly ApplicationDbContext _context;
     
-    public Handler(UserMailService userMailService, ApplicationDbContext context)
+    public Handler(ResetCodeMailService resetCodeMailService, ApplicationDbContext context)
     {
         _context = context;
-        _userMailService = userMailService;
+        _resetCodeMailService = resetCodeMailService;
     }
 
     public async Task<Response<EmptyValue>> Handle(SendResetCodeRequest request, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public class Handler : IRequestHandler<SendResetCodeRequest, Response<EmptyValue
         
         await _context.SaveChangesAsync();
         
-        await _userMailService.SendResetCodeAsync(new PasswordLetterModel(
+        await _resetCodeMailService.SendResetCodeAsync(new PasswordLetterModel(
             Code: code,
             Email: user.Email,
             UserName:user.DisplayName

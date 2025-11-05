@@ -1,4 +1,4 @@
-namespace lexicana.Razor.Models;
+namespace lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Models;
 
 public class WordCardModel
 {

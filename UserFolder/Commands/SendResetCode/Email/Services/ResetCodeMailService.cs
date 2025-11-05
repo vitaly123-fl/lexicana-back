@@ -1,8 +1,9 @@
 using lexicana.Razor;
-using lexicana.Razor.Models;
-using lexicana.Razor.Templates;
+using lexicana.EmailSender.Services;
+using lexicana.UserFolder.Commands.SendResetCode.Email.Models;
+using lexicana.UserFolder.Commands.SendResetCode.Email.Templates;
 
-namespace lexicana.EmailSender.Services;
+namespace lexicana.UserFolder.Commands.SendResetCode.Email.Services;
 
 public record PasswordLetterModel(
     string Email, 
@@ -10,9 +11,9 @@ public record PasswordLetterModel(
     string UserName
 );
 
-public class UserMailService : EmailService
+public class ResetCodeMailService : EmailService
 {
-    public UserMailService(EmailSender emailSender, RazorRenderer razorRenderer)
+    public ResetCodeMailService(EmailSender.EmailSender emailSender, RazorRenderer razorRenderer)
         : base(emailSender, razorRenderer) { }
 
     public async Task SendResetCodeAsync(PasswordLetterModel model)

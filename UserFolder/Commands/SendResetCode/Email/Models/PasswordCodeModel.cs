@@ -1,4 +1,4 @@
-namespace lexicana.Razor.Models;
+namespace lexicana.UserFolder.Commands.SendResetCode.Email.Models;
 
 public class PasswordCodeModel
 {

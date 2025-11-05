@@ -1,6 +1,7 @@
 using lexicana.Razor;
 using lexicana.EmailSender.Models;
-using lexicana.EmailSender.Services;
+using lexicana.UserFolder.Commands.SendResetCode.Email.Services;
+using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 
 namespace lexicana.EmailSender;
 
@@ -10,8 +11,8 @@ public static class EmailConfig
     {
         services.AddScoped<EmailSender>();
         services.AddScoped<RazorRenderer>();
-        services.AddScoped<UserMailService>();
-        services.AddScoped<SupportMailService>();
+        services.AddScoped<ResetCodeMailService>();
+        services.AddScoped<WordReportMailService>();
         services.Configure<EmailSenderSettings>(
             configuration.GetSection("EmailSenderSettings")
         );

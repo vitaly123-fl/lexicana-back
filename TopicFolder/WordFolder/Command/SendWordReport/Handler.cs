@@ -1,9 +1,9 @@
 using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
-using lexicana.Razor.Models;
-using lexicana.EmailSender.Services;
 using lexicana.Authorization.Services;
+using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Models;
+using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 
 namespace lexicana.TopicFolder.WordFolder.Command.SendWordReport;
 
@@ -13,13 +13,13 @@ public class Handler: IRequestHandler<SendWordReportRequest, Response<EmptyValue
 {
     private readonly AuthService _authService;
     private readonly ApplicationDbContext _context;
-    private readonly SupportMailService _supportMailService;
+    private readonly WordReportMailService _wordReportMailService;
     
-    public Handler(ApplicationDbContext context, SupportMailService supportMailService, AuthService authService)
+    public Handler(ApplicationDbContext context, WordReportMailService wordReportMailService, AuthService authService)
     {
         _context = context;
         _authService = authService;
-        _supportMailService = supportMailService;
+        _wordReportMailService = wordReportMailService;
     }
         
     public async Task<Response<EmptyValue>> Handle(SendWordReportRequest request, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public class Handler: IRequestHandler<SendWordReportRequest, Response<EmptyValue
         if (word is null)
             return FailureResponses.NotFound("Word not found");
 
-        await _supportMailService.SendTranslateReportAsync(new WordCardModel()
+        await _wordReportMailService.SendTranslateReportAsync(new WordCardModel()
         {
             Word = word.Value,
             Translation = word.Translation
