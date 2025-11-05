@@ -42,7 +42,6 @@ public class Handler: IRequestHandler<UpdateUserLanguageRequest, Response<EmptyV
         await _context.SaveChangesAsync();
         
         var hasUserTopicForLanguage = await _context.UserTopics
-            .Include(ut => ut.Topic)
             .AnyAsync(ut => ut.UserId == userId && ut.Topic.Language == request.Body.Language);
 
         if (hasUserTopicForLanguage) return SuccessResponses.Ok();

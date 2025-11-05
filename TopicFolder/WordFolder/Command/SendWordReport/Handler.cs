@@ -2,7 +2,6 @@ using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
 using lexicana.Authorization.Services;
-using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Models;
 using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 
 namespace lexicana.TopicFolder.WordFolder.Command.SendWordReport;

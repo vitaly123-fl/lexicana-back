@@ -21,7 +21,7 @@ public class Handler: IRequestHandler<CheckExistUserRequest, Response<EmptyValue
     
     public async Task<Response<EmptyValue>> Handle(CheckExistUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x=> x.Email == request.Body.Email);
+        var user = await _context.Users.FirstOrDefaultAsync(x=> x.Email == request.Body.Email, cancellationToken);
 
         if (user is null)
             return FailureResponses.NotFound("User not exist");

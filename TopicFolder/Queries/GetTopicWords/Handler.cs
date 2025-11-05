@@ -26,11 +26,12 @@ public class Handler: IRequestHandler<GetTopicWordsRequest, Response<List<WordMo
         var words = await _context.TopicWords
             .Where(tw => tw.TopicId == request.Id)
             .OrderBy(tw => tw.Order)
+            .Select(tw => tw.Word)
             .Select(tw => new WordModel
             {
-                Id = tw.Word.Id,
-                Word = tw.Word.Value,
-                Translation = tw.Word.Translation
+                Id = tw.Id,
+                Word = tw.Value,
+                Translation = tw.Translation
             })
             .ToListAsync(cancellationToken);
         

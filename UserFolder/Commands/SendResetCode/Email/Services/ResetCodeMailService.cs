@@ -1,9 +1,17 @@
 using lexicana.Razor;
 using lexicana.EmailSender.Services;
-using lexicana.UserFolder.Commands.SendResetCode.Email.Models;
 using lexicana.UserFolder.Commands.SendResetCode.Email.Templates;
 
 namespace lexicana.UserFolder.Commands.SendResetCode.Email.Services;
+
+public class PasswordCodeModel
+{
+    public string Title { get; set; }
+    public string UserName { get; set; }
+    public string? Subtitle { get; set; }
+    public string? Code { get; set; }
+    public string? LogoUrl { get; set; }
+}
 
 public record PasswordLetterModel(
     string Email, 
@@ -26,7 +34,7 @@ public class ResetCodeMailService : EmailService
             Title = "We’ve received a request to reset."
         };
 
-        await SendTemplateAsync<EmailTemplate>(
+        await SendAsync<EmailTemplate>(
             model.Email,
             "🤓 You have new message from Lexicana!",
             emailModel
