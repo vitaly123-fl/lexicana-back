@@ -1,4 +1,6 @@
 using lexicana.Razor;
+using lexicana.Common.Models;
+using Microsoft.Extensions.Options;
 using lexicana.EmailSender.Services;
 using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Templates;
 
@@ -12,8 +14,8 @@ public class WordCardModel
 
 public class WordReportMailService : EmailService
 {
-    public WordReportMailService(EmailSender.EmailSender emailSender, RazorRenderer razorRenderer) 
-        : base(emailSender, razorRenderer) { }
+     public WordReportMailService(EmailSender.EmailSender emailSender, RazorRenderer razorRenderer, IOptions<AppSettingOptions> appSettings)
+         : base(emailSender, razorRenderer, appSettings) { }
 
     private const string SupportEmail = "support@lexicana.app";
     
@@ -25,4 +27,6 @@ public class WordReportMailService : EmailService
             model: cardModel
         );
     }
+
+   
 }

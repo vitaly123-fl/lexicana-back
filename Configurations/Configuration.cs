@@ -18,8 +18,9 @@ public static class Configuration
         services.AddSwaggerConfig();
         services.AddEndpoints(Assembly.GetExecutingAssembly());
         services.AddAuthConfig(configuration);
-        services.AddFirebaseConfig(configuration);
         services.AddEmailConfig(configuration);
+        services.AddFirebaseConfig(configuration);
+        services.AddAppSettingsConfig(configuration);
         services.AddMediatR(x=> x.RegisterServicesFromAssemblyContaining<Program>());
         return services;
     }   

@@ -1,4 +1,6 @@
 using lexicana.Razor;
+using lexicana.Common.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components;
 
 namespace lexicana.EmailSender.Services;
@@ -7,11 +9,13 @@ public abstract class EmailService
 {
     private readonly EmailSender _emailSender;
     private readonly RazorRenderer _razorRenderer;
+    protected readonly AppSettingOptions _appSettings;
 
-    public EmailService(EmailSender emailSender, RazorRenderer razorRenderer)
+    public EmailService(EmailSender emailSender, RazorRenderer razorRenderer, IOptions<AppSettingOptions> appSettings)
     {
         _emailSender = emailSender;
         _razorRenderer = razorRenderer;
+        _appSettings = appSettings.Value;
     }
 
     private async Task SendAsync(string to, string subject, string html)
