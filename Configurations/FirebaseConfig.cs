@@ -11,7 +11,6 @@ public static class FirebaseConfig
         var credsPath = configuration["Firebase:CredentialsPath"];
         var projectId = configuration["Firebase:ProjectId"];
 
-        //TODO це має бути в середині метода адд AddSingleton
         if (FirebaseApp.DefaultInstance == null)
         {
             var credential = GoogleCredential.FromFile(credsPath);
@@ -23,7 +22,6 @@ public static class FirebaseConfig
             });
         }
 
-        //TODO чому ти вибрав саме AddSingleton
         services.AddSingleton(FirebaseAuth.DefaultInstance);
         return services;
     }
