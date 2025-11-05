@@ -26,7 +26,7 @@ WORKDIR /app
 
 # Copy the published application files from the build stage
 COPY --from=build /app/publish .
-
+COPY --from=build /app/wwwroot ./wwwroot
 
 # Expose the port the app will listen on
 EXPOSE 5001

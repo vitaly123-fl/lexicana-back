@@ -1,11 +1,11 @@
 using MediatR;
+using lexicana.Database;
 using FirebaseAdmin.Auth;
 using lexicana.Endpoints;
 using Microsoft.AspNetCore.Mvc;
-using lexicana.Authorization.Services;
-using lexicana.Database;
 using lexicana.UserFolder.Enums;
 using Microsoft.EntityFrameworkCore;
+using lexicana.Authorization.Services;
 
 namespace lexicana.UserFolder.Commands.UpdateEmail;
 
