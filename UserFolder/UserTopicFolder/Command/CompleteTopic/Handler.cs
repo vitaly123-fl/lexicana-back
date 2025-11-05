@@ -27,10 +27,10 @@ public class Handler: IRequestHandler<CompleteUserTopicRequest, Response<EmptyVa
         
         var userTopic = await _context.UserTopics
             .Include(x=>x.Topic)
-            .Where(x =>
+            .FirstOrDefaultAsync(x =>
                 x.TopicId == request.Id
                 && x.UserId == userId
-            ).FirstOrDefaultAsync();
+            );
 
         if (userTopic is null)
             return FailureResponses.NotFound("User topic not found");
@@ -50,7 +50,7 @@ public class Handler: IRequestHandler<CompleteUserTopicRequest, Response<EmptyVa
         var nextTopic = await _context.Topics
             .Where(t => t.Language == language && t.Order > userTopic.Topic.Order)
             .OrderBy(t => t.Order)
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync();
 
         if (nextTopic is null)
         {

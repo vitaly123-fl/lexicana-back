@@ -25,10 +25,10 @@ public class Handler: IRequestHandler<AddCompleteWordRequest, Response<EmptyValu
     public async Task<Response<EmptyValue>> Handle(AddCompleteWordRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
-        var userTopic = await _context.UserTopics.Where(x=>
+        var userTopic = await _context.UserTopics.FirstOrDefaultAsync(x=>
             x.UserId == userId 
             && x.TopicId == request.Id
-        ).FirstOrDefaultAsync();
+        );
 
         if (userTopic is null)
             return FailureResponses.NotFound("User topic not found");

@@ -28,20 +28,22 @@ public class Handler: IRequestHandler<GetUserTopicsRequest, Response<List<UserTo
     public async Task<Response<List<UserTopicsResponseBody>>> Handle(GetUserTopicsRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
-        var user = await _context.Users
-            .Include(x => x.UserTopics)
-            .ThenInclude(x=>x.Topic)
-            .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+        var userLanguage = await _context.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Language)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (user is null)
+        if (userLanguage is null)
             return FailureResponses.NotFound<List<UserTopicsResponseBody>>("User not found");
 
-        var userTopics = user.UserTopics
-            .Where(x => x.Topic.Language == user.Language)
-            .Select(x => new UserTopicsResponseBody(
-                x.TopicId,
-                x.Status
-            )).ToList();
+        var userTopics = await _context.UserTopics
+            .Where(ut => ut.UserId == userId && ut.Topic.Language == userLanguage)
+            .Select(ut => new UserTopicsResponseBody(
+                ut.TopicId,
+                ut.Status
+            ))
+            .ToListAsync(cancellationToken);
+
         
         return SuccessResponses.Ok(userTopics);
     }

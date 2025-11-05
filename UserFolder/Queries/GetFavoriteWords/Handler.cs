@@ -23,23 +23,25 @@ public class Handler : IRequestHandler<GetFavoriteWordsRequest, Response<List<Wo
     public async Task<Response<List<WordModel>>> Handle(GetFavoriteWordsRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
-        
-        var user = await _context.Users
-            .Include(x=>x.FavoriteWords)
-            .FirstOrDefaultAsync(x=>x.Id == userId);
 
-        if (user is null)
+        var userLanguage = await _context.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Language)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (userLanguage is null)
             return FailureResponses.NotFound<List<WordModel>>("User not found");
 
-        var words = user.FavoriteWords
-            .Where(x => x.Language == user.Language)
-            .Select(x => new WordModel()
+        var favoriteWords = await _context.Words
+            .Where(w => w.UsersForFavorite.Any(u => u.Id == userId) && w.Language == userLanguage)
+            .Select(w => new WordModel
             {
-                Id = x.Id,
-                Word = x.Value,
-                Translation = x.Translation
-            }).ToList();
+                Id = w.Id,
+                Word = w.Value,
+                Translation = w.Translation
+            })
+            .ToListAsync(cancellationToken);
 
-        return SuccessResponses.Ok(words);
+        return SuccessResponses.Ok(favoriteWords);
     }
 }

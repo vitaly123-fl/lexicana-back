@@ -13,13 +13,13 @@ public record SendResetCodeBody(string Email);
 
 public class Handler : IRequestHandler<SendResetCodeRequest, Response<EmptyValue>>
 {
-    private readonly EmailService _emailService;
+    private readonly UserMailService _userMailService;
     private readonly ApplicationDbContext _context;
     
-    public Handler(EmailService emailService, ApplicationDbContext context)
+    public Handler(UserMailService userMailService, ApplicationDbContext context)
     {
         _context = context;
-        _emailService = emailService;
+        _userMailService = userMailService;
     }
 
     public async Task<Response<EmptyValue>> Handle(SendResetCodeRequest request, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public class Handler : IRequestHandler<SendResetCodeRequest, Response<EmptyValue
         
         await _context.SaveChangesAsync();
         
-        await _emailService.SendResetCodeAsync(new PasswordLetterModel(
+        await _userMailService.SendResetCodeAsync(new PasswordLetterModel(
             Code: code,
             Email: user.Email,
             UserName:user.DisplayName

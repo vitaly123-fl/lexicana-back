@@ -12,14 +12,14 @@ public record SendWordReportRequest(Guid Id): IHttpRequest<EmptyValue>;
 public class Handler: IRequestHandler<SendWordReportRequest, Response<EmptyValue>>
 {
     private readonly AuthService _authService;
-    private readonly EmailService _emailService;
     private readonly ApplicationDbContext _context;
+    private readonly SupportMailService _supportMailService;
     
-    public Handler(ApplicationDbContext context, EmailService emailService, AuthService authService)
+    public Handler(ApplicationDbContext context, SupportMailService supportMailService, AuthService authService)
     {
         _context = context;
         _authService = authService;
-        _emailService = emailService;
+        _supportMailService = supportMailService;
     }
         
     public async Task<Response<EmptyValue>> Handle(SendWordReportRequest request, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public class Handler: IRequestHandler<SendWordReportRequest, Response<EmptyValue
         if (word is null)
             return FailureResponses.NotFound("Word not found");
 
-        await _emailService.SendTranslateReportAsync(new WordCardModel()
+        await _supportMailService.SendTranslateReportAsync(new WordCardModel()
         {
             Word = word.Value,
             Translation = word.Translation
