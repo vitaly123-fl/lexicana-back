@@ -13,8 +13,7 @@ public class Handler: IRequestHandler<DeleteAccountRequest, Response<EmptyValue>
     private readonly AuthService _authService;
     private readonly FirebaseAuth _firebaseAuth;
     private readonly ApplicationDbContext _context;
-
-
+    
     public Handler(AuthService authService, ApplicationDbContext context, FirebaseAuth firebaseAuth)
     {
         _context = context;

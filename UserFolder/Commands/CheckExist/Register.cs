@@ -6,6 +6,7 @@ public class Register: IEndpoint
 {
     public void MapEndpoint(RouteGroupBuilder app)
     {
-        app.MediatePost<CheckExistUserRequest, EmptyValue>("users/exist").AllowAnonymous();
+        app.MediatePost<CheckExistUserRequest, EmptyValue>("users/exist")
+            .WithTags(EndpointTagEnum.User).AllowAnonymous();
     }
 }

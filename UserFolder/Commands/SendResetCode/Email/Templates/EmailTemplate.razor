@@ -1,3 +1,5 @@
+@using lexicana.Common.Models
+@inject Microsoft.Extensions.Options.IOptions<AppSettingOptions> AppSettings
 @using lexicana.UserFolder.Commands.SendResetCode.Email.Services
 <!DOCTYPE html>
 <html>
@@ -91,7 +93,6 @@
                 border-color: #5E2BA7 !important;
             }
         }
-
         @@media only screen and (max-width: 600px) {
             .email-container {
                 padding: 30px 20px;
@@ -137,10 +138,7 @@
 </head>
 <body>
 <div class="email-container">
-    @if (!string.IsNullOrEmpty(Model.LogoUrl))
-    {
-    <img src="@Model.LogoUrl" height=40 style="margin-bottom:40px;" alt="Lexicana Logo">
-    }
+    <img src="@($"{AppSettings.Value.BaseUrl}/logo/logo-with-text.png")" height="40" style="margin-bottom:40px;" alt="Lexicana Logo" />
     <div class="email-header"><strong>Hi @Model.UserName!</strong> @Model.Title</div>
     <div class="email-subtitle">@Model.Subtitle</div>
     <div class="code-container">

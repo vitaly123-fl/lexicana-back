@@ -1,5 +1,6 @@
 using System.Reflection;
 using lexicana.Authorization;
+using lexicana.Common;
 using lexicana.Database;
 using lexicana.EmailSender;
 using lexicana.Endpoints;
