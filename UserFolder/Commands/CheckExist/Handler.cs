@@ -1,6 +1,7 @@
 using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
+using lexicana.UserFolder.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +22,14 @@ public class Handler: IRequestHandler<CheckExistUserRequest, Response<EmptyValue
     
     public async Task<Response<EmptyValue>> Handle(CheckExistUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x=> x.Email == request.Body.Email, cancellationToken);
+        var user = await _context.Users.FirstOrDefaultAsync(
+            x=> x.Email == request.Body.Email 
+            && x.Provider == FirebaseProviderEnum.Password, 
+            cancellationToken
+        );
 
         if (user is null)
-            return FailureResponses.NotFound("User not exist");
+            return FailureResponses.NotFound("This user with password provider not exist");
         
         return SuccessResponses.Ok();
     }
