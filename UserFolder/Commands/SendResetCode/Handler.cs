@@ -2,6 +2,7 @@ using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
 using Microsoft.AspNetCore.Mvc;
+using lexicana.UserFolder.Enums;
 using Microsoft.EntityFrameworkCore;
 using lexicana.UserFolder.Commands.SendResetCode.Email.Services;
 
@@ -24,7 +25,10 @@ public class Handler : IRequestHandler<SendResetCodeRequest, Response<EmptyValue
 
     public async Task<Response<EmptyValue>> Handle(SendResetCodeRequest request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x=>x.Email == request.Body.Email);
+        var user = await _context.Users.FirstOrDefaultAsync(
+            x=>x.Email == request.Body.Email
+            && x.Provider == FirebaseProviderEnum.Password
+        );
         
         if (user is null) return FailureResponses.NotFound("User not found");
         
