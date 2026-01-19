@@ -5,8 +5,8 @@ using lexicana.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
-using lexicana.UserFolder.UserTopicFolder.Enums;
-using lexicana.UserFolder.UserTopicFolder.Entities;
+using lexicana.UserFolder.UserLessonFolder.Enums;
+using lexicana.UserFolder.UserLessonFolder.Entities;
 
 namespace lexicana.UserFolder.Commands.UpdateLanguage;
 
@@ -32,7 +32,7 @@ public class Handler: IRequestHandler<UpdateUserLanguageRequest, Response<EmptyV
         var userId = _authService.GetCurrentUserId();
         
         var user = await _context.Users
-            .Include(x=>x.UserTopics)
+            .Include(x=>x.UserLessons)
             .FirstOrDefaultAsync(x=> x.Id == userId);
         
         if (user == null) 
@@ -41,27 +41,28 @@ public class Handler: IRequestHandler<UpdateUserLanguageRequest, Response<EmptyV
         user.Language = request.Body.Language;
         await _context.SaveChangesAsync();
         
-        var hasUserTopicForLanguage = await _context.UserTopics
-            .AnyAsync(ut => ut.UserId == userId && ut.Topic.Language == request.Body.Language);
+        var hasUserLessonForLanguage = await _context.UserLessons
+            .AnyAsync(ut => ut.UserId == userId && ut.Lesson.Language == request.Body.Language);
 
-        if (hasUserTopicForLanguage) return SuccessResponses.Ok();
+        if (hasUserLessonForLanguage) return SuccessResponses.Ok();
         
-        var firstTopic = await _context.Topics
+        var firstLesson = await _context.Lessons
             .Where(t => t.Language == request.Body.Language)
             .OrderBy(t => t.Order)
             .FirstOrDefaultAsync();
 
-        if (firstTopic is null) return SuccessResponses.Ok();
+        if (firstLesson is null) return SuccessResponses.Ok();
         
-        var userTopic = new UserTopic
+        var userLesson = new UserLesson
         {
             UserId = user.Id,
-            TopicId = firstTopic.Id,
-            Status = UserTopicStatus.Current
+            LessonId = firstLesson.Id,
+            Status = UserLessonStatus.Current
         };
 
-        await _context.UserTopics.AddAsync(userTopic);
+        await _context.UserLessons.AddAsync(userLesson);
         await _context.SaveChangesAsync();
+        
         return SuccessResponses.Ok();
     }
 }

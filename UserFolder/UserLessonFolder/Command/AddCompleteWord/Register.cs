@@ -1,12 +1,12 @@
 using lexicana.Endpoints;
 
-namespace lexicana.UserFolder.Queries.GetUserTopics;
+namespace lexicana.UserFolder.UserLessonFolder.Command.AddCompleteWord;
 
 public class Register: IEndpoint
 {
     public void MapEndpoint(RouteGroupBuilder app)
     {
-        app.MediateGet<GetUserTopicsRequest, List<UserTopicsResponseBody>>("users/topics")
+        app.MediatePost<AddCompleteWordRequest, EmptyValue>("users/lessons/{id}/words")
             .WithTags(EndpointTagEnum.User);
     }
 }

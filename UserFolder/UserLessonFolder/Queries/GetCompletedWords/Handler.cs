@@ -1,10 +1,10 @@
-using lexicana.Authorization.Services;
+using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
+using lexicana.Authorization.Services;
 
-namespace lexicana.UserFolder.UserTopicFolder.Queries.GetCompletedWords;
+namespace lexicana.UserFolder.UserLessonFolder.Queries.GetCompletedWords;
 
 public record GetCompletedWordsRequest(Guid Id): IHttpRequest<List<Guid>>;
 
@@ -22,14 +22,15 @@ public class Handler: IRequestHandler<GetCompletedWordsRequest, Response<List<Gu
     public async Task<Response<List<Guid>>> Handle(GetCompletedWordsRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
-        var userTopic = await _context.UserTopics.Where(x=>
+        
+        var userLesson = await _context.UserLessons.Where(x=>
             x.UserId == userId 
-            && x.TopicId == request.Id
+            && x.LessonId == request.Id
         ).FirstOrDefaultAsync();
 
-        if (userTopic is null)
-            return FailureResponses.NotFound<List<Guid>>("User topic not found");
+        if (userLesson is null)
+            return FailureResponses.NotFound<List<Guid>>("User lesson not found");
 
-        return SuccessResponses.Ok(userTopic.CompleatedWordsIds);
+        return SuccessResponses.Ok(userLesson.CompleatedWordsIds);
     }
 }

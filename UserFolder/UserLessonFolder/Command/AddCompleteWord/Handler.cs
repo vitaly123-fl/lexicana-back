@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
 
-namespace lexicana.UserFolder.UserTopicFolder.Command.AddCompleteWord;
+namespace lexicana.UserFolder.UserLessonFolder.Command.AddCompleteWord;
 
 public record AddCompleteWordRequest(Guid Id, [FromBody] AddCompleteWordBody Body) : IHttpRequest<EmptyValue>;
 
@@ -25,15 +25,16 @@ public class Handler: IRequestHandler<AddCompleteWordRequest, Response<EmptyValu
     public async Task<Response<EmptyValue>> Handle(AddCompleteWordRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
-        var userTopic = await _context.UserTopics.FirstOrDefaultAsync(x=>
+        
+        var userLesson = await _context.UserLessons.FirstOrDefaultAsync(x=>
             x.UserId == userId 
-            && x.TopicId == request.Id
+            && x.LessonId == request.Id
         );
 
-        if (userTopic is null)
-            return FailureResponses.NotFound("User topic not found");
+        if (userLesson is null)
+            return FailureResponses.NotFound("User lesson not found");
 
-        userTopic.CompleatedWordsIds.Add(request.Body.WordId);
+        userLesson.CompleatedWordsIds.Add(request.Body.WordId);
         await _context.SaveChangesAsync();
         return SuccessResponses.Ok();
     }

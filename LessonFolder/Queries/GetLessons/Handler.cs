@@ -4,18 +4,18 @@ using lexicana.Endpoints;
 using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
 
-namespace lexicana.TopicFolder.Queries.GetTopics;
+namespace lexicana.LessonFolder.Queries.GetLessons;
 
-public record GetTopicsRequest() : IHttpRequest<List<TopicsResponseBody>>;
+public record GetLessonsRequest() : IHttpRequest<List<LessonsResponseBody>>;
 
-public record TopicsResponseBody(
+public record LessonsResponseBody(
     Guid Id,
     string Title,
     bool IsGrouped,
     bool IsPremium
 );
 
-public class Handler: IRequestHandler<GetTopicsRequest, Response<List<TopicsResponseBody>>>
+public class Handler: IRequestHandler<GetLessonsRequest, Response<List<LessonsResponseBody>>>
 {
     private readonly AuthService _authService;
     private readonly ApplicationDbContext _context;
@@ -26,25 +26,25 @@ public class Handler: IRequestHandler<GetTopicsRequest, Response<List<TopicsResp
         _authService = authService;
     }
     
-    public async Task<Response<List<TopicsResponseBody>>> Handle(GetTopicsRequest request, CancellationToken cancellationToken)
+    public async Task<Response<List<LessonsResponseBody>>> Handle(GetLessonsRequest request, CancellationToken cancellationToken)
     {
         var userId = _authService.GetCurrentUserId();
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
 
         if (user is null)
-            return FailureResponses.NotFound<List<TopicsResponseBody>>("User not found");
+            return FailureResponses.NotFound<List<LessonsResponseBody>>("User not found");
 
-        var topics = await _context.Topics
+        var lessons = await _context.Lessons
             .Where(t => t.Language == user.Language)
             .OrderBy(t => t.Order)
-            .Select(t => new TopicsResponseBody(
+            .Select(t => new LessonsResponseBody(
                 t.Id,
                 t.Title,
-                t.IsGrouped,
+                t.Topics.Count > 1,
                 t.IsPremium
             ))
             .ToListAsync(cancellationToken);
         
-        return SuccessResponses.Ok(topics);
+        return SuccessResponses.Ok(lessons);
     }
 }
