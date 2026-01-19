@@ -1,8 +1,8 @@
 using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
+using lexicana.LessonFolder.TopicFolder.WordFolder.DTOs;
 using Microsoft.EntityFrameworkCore;
-using lexicana.TopicFolder.WordFolder.DTOs;
 
 namespace lexicana.LessonFolder.Queries.GetLessonWords;
 

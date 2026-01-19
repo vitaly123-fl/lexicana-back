@@ -7,10 +7,10 @@ using System.Globalization;
 using lexicana.Common.Enums;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
-using lexicana.TopicFolder.Entities;
 using CsvHelper.Configuration.Attributes;
 using lexicana.LessonFolder.Entites;
-using lexicana.TopicFolder.WordFolder.Entities;
+using lexicana.LessonFolder.TopicFolder.Entities;
+using lexicana.LessonFolder.TopicFolder.WordFolder.Entities;
 
 namespace lexicana.ParserFolder.Commands.TopicWordParser;
 

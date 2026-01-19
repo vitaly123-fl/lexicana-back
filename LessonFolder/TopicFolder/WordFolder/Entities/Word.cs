@@ -1,9 +1,9 @@
 using lexicana.Common.Enums;
 using lexicana.Common.Entities;
 using lexicana.UserFolder.Entities;
-using lexicana.TopicFolder.Entities;
+using lexicana.LessonFolder.TopicFolder.Entities;
 
-namespace lexicana.TopicFolder.WordFolder.Entities;
+namespace lexicana.LessonFolder.TopicFolder.WordFolder.Entities;
 
 public class Word: BaseEntity
 {

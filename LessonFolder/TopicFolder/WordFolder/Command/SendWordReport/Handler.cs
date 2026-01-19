@@ -2,9 +2,9 @@ using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
 using lexicana.Authorization.Services;
-using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
+using lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 
-namespace lexicana.TopicFolder.WordFolder.Command.SendWordReport;
+namespace lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport;
 
 public record SendWordReportRequest(Guid Id): IHttpRequest<EmptyValue>;
 

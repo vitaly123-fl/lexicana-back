@@ -28,4 +28,12 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="TopicFolder\WordFolder\Command\SendWordReport\Email\Templates\TranslateReport.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="LessonFolder\TopicFolder\WordFolder\Command\SendWordReport\Email\Templates\TranslateReport.razor" />
+    </ItemGroup>
+
 </Project>

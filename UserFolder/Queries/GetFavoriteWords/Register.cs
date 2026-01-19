@@ -1,5 +1,5 @@
 using lexicana.Endpoints;
-using lexicana.TopicFolder.WordFolder.DTOs;
+using lexicana.LessonFolder.TopicFolder.WordFolder.DTOs;
 
 namespace lexicana.UserFolder.Queries.GetFavoriteWords;
 

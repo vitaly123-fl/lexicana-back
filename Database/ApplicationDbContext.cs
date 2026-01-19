@@ -1,8 +1,8 @@
 using lexicana.UserFolder.Entities;
 using lexicana.LessonFolder.Entites;
-using lexicana.TopicFolder.Entities;
+using lexicana.LessonFolder.TopicFolder.Entities;
+using lexicana.LessonFolder.TopicFolder.WordFolder.Entities;
 using Microsoft.EntityFrameworkCore;
-using lexicana.TopicFolder.WordFolder.Entities;
 using lexicana.UserFolder.UserLessonFolder.Entities;
 
 namespace lexicana.Database

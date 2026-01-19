@@ -1,4 +1,4 @@
-namespace lexicana.TopicFolder.WordFolder.DTOs;
+namespace lexicana.LessonFolder.TopicFolder.WordFolder.DTOs;
 
 public class WordModel
 {

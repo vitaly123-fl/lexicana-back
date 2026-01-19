@@ -1,6 +1,6 @@
 using lexicana.Endpoints;
 
-namespace lexicana.TopicFolder.WordFolder.Command.SendWordReport;
+namespace lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport;
 
 public class Register: IEndpoint
 {

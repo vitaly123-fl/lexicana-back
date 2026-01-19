@@ -1,6 +1,6 @@
 using lexicana.Common.Enums;
 using lexicana.Common.Entities;
-using lexicana.TopicFolder.Entities;
+using lexicana.LessonFolder.TopicFolder.Entities;
 
 namespace lexicana.LessonFolder.Entites;
 

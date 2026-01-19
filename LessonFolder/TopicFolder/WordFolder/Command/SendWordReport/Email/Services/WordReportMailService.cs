@@ -1,8 +1,8 @@
 using lexicana.Razor;
 using lexicana.EmailSender.Services;
-using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Templates;
+using lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Templates;
 
-namespace lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
+namespace lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 
 public class WordCardModel
 {

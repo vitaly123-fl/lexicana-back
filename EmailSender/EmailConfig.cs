@@ -1,7 +1,7 @@
 using lexicana.Razor;
 using lexicana.EmailSender.Models;
+using lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 using lexicana.UserFolder.Commands.SendResetCode.Email.Services;
-using lexicana.TopicFolder.WordFolder.Command.SendWordReport.Email.Services;
 
 namespace lexicana.EmailSender;
 

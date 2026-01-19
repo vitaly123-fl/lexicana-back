@@ -3,7 +3,7 @@ using lexicana.Database;
 using lexicana.Endpoints;
 using Microsoft.EntityFrameworkCore;
 using lexicana.Authorization.Services;
-using lexicana.TopicFolder.WordFolder.DTOs;
+using lexicana.LessonFolder.TopicFolder.WordFolder.DTOs;
 
 namespace lexicana.UserFolder.Queries.GetFavoriteWords;
 
