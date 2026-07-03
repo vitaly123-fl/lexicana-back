@@ -56,10 +56,9 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
             .OrderBy(t => t.CreateAt)
             .ToListAsync(cancellationToken);
 
-        var hasExistingReviewLesson = await _context.Lessons
-            .Where(l => l.Language == request.Language)
-            .AnyAsync(l => l.Topics.Count > 1, cancellationToken);
-        
+        var hasExistingLesson = await _context.Lessons
+            .AnyAsync(l => l.Language == request.Language, cancellationToken);
+
         var newTopics = new List<Topic>();
         
         var batches = records.Chunk(WordsPerTopic);
@@ -70,8 +69,12 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
             newTopics.Add(topic);
             existingTopicsCount++;
 
-            var lesson = CreateLesson(request.Language, ++maxLessonOrder, existingTopicsCount, topic);
+            var isFirstLesson = !hasExistingLesson;
+
+            var lesson = CreateLesson(request.Language, ++maxLessonOrder, existingTopicsCount, topic, isFirstLesson);
             _context.Lessons.Add(lesson);
+
+            if (isFirstLesson) hasExistingLesson = true;
 
             if (existingTopicsCount % TopicsPerReviewLesson != 0) continue;
 
@@ -80,18 +83,8 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
                 .TakeLast(TopicsPerReviewLesson)
                 .ToList();
 
-            var isFirstReview = !hasExistingReviewLesson;
-            
-            var reviewLesson = CreateReviewLesson(
-                request.Language, 
-                ++maxLessonOrder, 
-                existingTopicsCount, 
-                topicsForReview,
-                isFirstReview    
-            );
+            var reviewLesson = CreateReviewLesson(request.Language, ++maxLessonOrder, existingTopicsCount, topicsForReview);
             _context.Lessons.Add(reviewLesson);
-            
-            if (isFirstReview) hasExistingReviewLesson = true;
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -135,8 +128,20 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
         return topic;
     }
 
-    private static Lesson CreateLesson(Language language, int order, int topicNumber, Topic topic)
+    private static Lesson CreateLesson(Language language, int order, int topicNumber, Topic topic, bool isFirstLesson)
     {
+        if (isFirstLesson)
+        {
+            return new Lesson
+            {
+                Order = order,
+                Title = $"Top {WordsPerTopic}",
+                IsPremium = false,
+                Language = language,
+                Topics = [topic]
+            };
+        }
+
         var (start, end) = GetWordRange(topicNumber, 1);
         
         return new Lesson
@@ -149,20 +154,8 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
         };
     }
 
-    private static Lesson CreateReviewLesson(Language language, int order, int topicNumber, List<Topic> topics, bool isFirstReview)
+    private static Lesson CreateReviewLesson(Language language, int order, int topicNumber, List<Topic> topics)
     {
-        if (isFirstReview)
-        {
-            return new Lesson
-            {
-                Order = order,
-                Title = $"Top {WordsPerTopic}",
-                IsPremium = false,
-                Language = language,
-                Topics = topics
-            };
-        }
-        
         var (start, end) = GetWordRange(topicNumber, TopicsPerReviewLesson);
         
         return new Lesson
