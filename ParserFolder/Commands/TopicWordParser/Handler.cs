@@ -56,6 +56,10 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
             .OrderBy(t => t.CreateAt)
             .ToListAsync(cancellationToken);
 
+        var hasExistingReviewLesson = await _context.Lessons
+            .Where(l => l.Language == request.Language)
+            .AnyAsync(l => l.Topics.Count > 1, cancellationToken);
+        
         var newTopics = new List<Topic>();
         
         var batches = records.Chunk(WordsPerTopic);
@@ -76,8 +80,18 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
                 .TakeLast(TopicsPerReviewLesson)
                 .ToList();
 
-            var reviewLesson = CreateReviewLesson(request.Language, ++maxLessonOrder, existingTopicsCount, topicsForReview);
+            var isFirstReview = !hasExistingReviewLesson;
+            
+            var reviewLesson = CreateReviewLesson(
+                request.Language, 
+                ++maxLessonOrder, 
+                existingTopicsCount, 
+                topicsForReview,
+                isFirstReview    
+            );
             _context.Lessons.Add(reviewLesson);
+            
+            if (isFirstReview) hasExistingReviewLesson = true;
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -135,8 +149,20 @@ public class Handler : IRequestHandler<WordParserCommand, Response<List<WordReco
         };
     }
 
-    private static Lesson CreateReviewLesson(Language language, int order, int topicNumber, List<Topic> topics)
+    private static Lesson CreateReviewLesson(Language language, int order, int topicNumber, List<Topic> topics, bool isFirstReview)
     {
+        if (isFirstReview)
+        {
+            return new Lesson
+            {
+                Order = order,
+                Title = $"Top {WordsPerTopic}",
+                IsPremium = false,
+                Language = language,
+                Topics = topics
+            };
+        }
+        
         var (start, end) = GetWordRange(topicNumber, TopicsPerReviewLesson);
         
         return new Lesson
