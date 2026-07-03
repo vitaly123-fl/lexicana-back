@@ -1,8 +1,8 @@
 using MediatR;
 using lexicana.Database;
 using lexicana.Endpoints;
-using lexicana.LessonFolder.TopicFolder.WordFolder.DTOs;
 using Microsoft.EntityFrameworkCore;
+using lexicana.LessonFolder.TopicFolder.WordFolder.DTOs;
 
 namespace lexicana.LessonFolder.Queries.GetLessonWords;
 
@@ -32,6 +32,7 @@ public class Handler : IRequestHandler<GetLessonWordsRequest, Response<List<Word
             {
                 Id = w.Id,
                 Word = w.Value,
+                Language = w.Language,
                 Translation = w.Translation
             })
             .ToListAsync(cancellationToken);

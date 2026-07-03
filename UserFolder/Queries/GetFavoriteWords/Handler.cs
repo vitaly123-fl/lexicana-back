@@ -38,6 +38,7 @@ public class Handler : IRequestHandler<GetFavoriteWordsRequest, Response<List<Wo
             {
                 Id = w.Id,
                 Word = w.Value,
+                Language = w.Language,
                 Translation = w.Translation
             })
             .ToListAsync(cancellationToken);
