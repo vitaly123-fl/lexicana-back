@@ -37,6 +37,8 @@ public class Handler: IRequestHandler<SendWordReportRequest, Response<EmptyValue
         await _wordReportMailService.SendTranslateReportAsync(new WordCardModel()
         {
             Word = word.Value,
+            Email = user.Email,
+            Language = word.Language,
             Translation = word.Translation
         });
 

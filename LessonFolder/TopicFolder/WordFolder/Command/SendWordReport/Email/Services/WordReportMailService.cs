@@ -1,4 +1,5 @@
 using lexicana.Razor;
+using lexicana.Common.Enums;
 using lexicana.EmailSender.Services;
 using lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Templates;
 
@@ -7,6 +8,8 @@ namespace lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Em
 public class WordCardModel
 {
     public string Word { get; set; }
+    public string Email { get; set; }
+    public Language Language { get; set; }
     public string Translation { get; set; }
 }
 
@@ -25,6 +28,4 @@ public class WordReportMailService : EmailService
             model: cardModel
         );
     }
-
-   
 }

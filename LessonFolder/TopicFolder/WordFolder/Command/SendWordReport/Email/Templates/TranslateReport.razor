@@ -1,3 +1,4 @@
+@using lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Helpers
 @using lexicana.LessonFolder.TopicFolder.WordFolder.Command.SendWordReport.Email.Services
 <!DOCTYPE html>
 <html>
@@ -45,6 +46,11 @@
             color: #ffffff;
             text-decoration: underline;
         }
+        .reporter-email {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -53,7 +59,10 @@
     <div class="divider"></div>
     <div class="word-translation">@Model.Translation</div>
     <div class="reference-link">
-        See full definition on <a href="https://wordreference.com/es/en/translation.asp?spen=@Model.Word" style="color: #ffffff; border-bottom-color: #5E2BA7;">wordreference.com</a>
+        See full definition on <a href="@WordReferenceLinkHelper.BuildUrl(Model.Language, Model.Word)" style="color: #ffffff; border-bottom-color: #5E2BA7;">wordreference.com</a>
+    </div>
+    <div class="reporter-email">
+        Reported by: <a href="mailto:@Model.Email?subject=Re: Translation Report for &quot;@Model.Word&quot;" style="color: rgba(255, 255, 255, 0.7); text-decoration: underline;">@Model.Email</a>
     </div>
 </div>
 </body>
